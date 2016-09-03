@@ -1,42 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+<!-- 起動時のメイン画面のレイアウトです。ListViewが一覧表示をします。id=@+id/xxでViewにidを付与します  -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ListView
+        android:id="@+id/mylist"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello Android!" />
-
-    <Button
-        android:id="@+id/btn_pushme"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="押してください" />
-
-    <ImageView
-        android:id="@+id/iv_android"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/hey"/>
-
-    <SeekBar
-        android:id="@+id/sb_red"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="255"/>
-
-    <SeekBar
-        android:id="@+id/sb_green"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="255"/>
-    <SeekBar
-        android:id="@+id/sb_blue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="255"/>
-
-    </LinearLayout>
+</RelativeLayout>
