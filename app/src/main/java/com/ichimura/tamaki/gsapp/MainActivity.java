@@ -2,10 +2,14 @@
 //どのアクティビティーが起動時に実行されるのかはAndroidManifestに記述されています。
 package com.ichimura.tamaki.gsapp;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -25,6 +29,7 @@ public class MainActivity extends ActionBarActivity {
 
     //アダプタークラスです。
     private MessageRecordsAdapter mAdapter;
+    private List<MessageRecord> messageRecords;
 
     //起動時にOSから実行される関数です。
     @Override
@@ -57,7 +62,7 @@ public class MainActivity extends ActionBarActivity {
                         //try catchでエラーを処理します。tryが必要かどうかはtryに記述している関数次第です。
                         try {
                             //jsonデータを下記で定義したparse関数を使いデータクラスにセットしています。
-                            List<MessageRecord> messageRecords = parse(jsonObject);
+                            messageRecords = parse(jsonObject);
                             //データをアダプターにセットしています。
                             mAdapter.setMessageRecords(messageRecords);
                         }
@@ -123,5 +128,28 @@ public class MainActivity extends ActionBarActivity {
 
        // return super.onOptionsItemSelected(item);
    // }
+
+
+
+
+
+
+
+
+    //検索
+    private void search(){
+        String check = "";
+        List<MessageRecord> result = new ArrayList<MessageRecord>();
+        for(int i = 0; i < messageRecords.size(); i++) {
+            if(messageRecords.get(i).getComment().contains(check)) result.add(messageRecords.get(i));
+        }
+        mAdapter.setMessageRecords(result);
+    }
+
+
+
+
+
+
 
 }
