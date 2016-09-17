@@ -3,6 +3,9 @@
 package com.ichimura.tamaki.gsapp;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.kii.cloud.storage.KiiUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,6 +27,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.R.attr.id;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -35,6 +41,24 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Userで追加ここから
+        //KiiCloudでのログイン状態を取得します。nullの時はログインしていない。
+        KiiUser user = KiiUser.getCurrentUser();
+        //自動ログインのため保存されているaccess tokenを読み出す。tokenがあればログインできる
+        SharedPreferences pref = getSharedPreferences(getString(R.string.save_data_name), Context.MODE_PRIVATE);
+        String token = pref.getString(getString(R.string.save_token), "");//保存されていない時は""
+        //ログインしていない時はログインのactivityに遷移.SharedPreferencesが空の時もチェックしないとLogOutできない。
+        if(user == null || token == "") {
+            // Intent のインスタンスを取得する。getApplicationContext()でViewの自分のアクティビティーのコンテキストを取得。遷移先のアクティビティーを.classで指定
+            Intent intent = new Intent(getApplicationContext(), com.ichimura.tamaki.gsapp.UserActivity.class);
+            // 遷移先の画面を呼び出す
+            startActivity(intent);
+            //戻れないようにActivityを終了します。
+            finish();
+        }
+        //Userで追加ここまで
+
         //メイン画面のレイアウトをセットしています。ListView
         setContentView(R.layout.activity_main);
 
@@ -53,7 +77,8 @@ public class MainActivity extends ActionBarActivity {
     private void fetch() {
         //jsonデータをサーバーから取得する通信機能です。Volleyの機能です。通信クラスのインスタンスを作成しているだけです。通信はまだしていません。
         JsonObjectRequest request = new JsonObjectRequest(
-                "http://gashfara.com/test/json.txt" ,//jsonデータが有るサーバーのURLを指定します。
+//                "http://gashfara.com/test/json.txt" ,//jsonデータが有るサーバーのURLを指定します。
+                "https://api.instagram.com/v1/users/self/media/recent/?access_token=51830145.23a0220.599e963ec42749acb2eab637d3e213c2",
                 null,
                 //サーバー通信した結果、成功した時の処理をするクラスを作成しています。
                 new Response.Listener<JSONObject>() {
@@ -89,14 +114,17 @@ public class MainActivity extends ActionBarActivity {
         //空のMessageRecordデータの配列を作成
         ArrayList<MessageRecord> records = new ArrayList<MessageRecord>();
         //jsonデータのmessagesにあるJson配列を取得します。
-        JSONArray jsonMessages = json.getJSONArray("messages");
+//        JSONArray jsonMessages = json.getJSONArray("messages");
+        JSONArray jsonMessages = json.getJSONArray("data");
         //配列の数だけ繰り返します。
         for(int i =0; i < jsonMessages.length(); i++) {
             //１つだけ取り出します。
             JSONObject jsonMessage = jsonMessages.getJSONObject(i);
             //jsonの値を取得します。
-            String title = jsonMessage.getString("comment");
-            String url = jsonMessage.getString("imageUrl");
+//            String title = jsonMessage.getString("comment");
+//            String url = jsonMessage.getString("imageUrl");
+            String title = jsonMessage.getJSONObject("user").getString("username");
+            String url = jsonMessage.getJSONObject("images").getJSONObject("standard_resolution").getString("url");
             //jsonMessageを新しく作ります。
             MessageRecord record = new MessageRecord(url, title);
             //MessageRecordの配列に追加します。
@@ -107,12 +135,30 @@ public class MainActivity extends ActionBarActivity {
     }
 
     //デフォルトで作成されたメニューの関数です。未使用。
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        //Userで追加ここから
+        //ログアウト処理.KiiCloudにはログアウト機能はないのでAccesTokenを削除して対応。
+        if (id == R.id.log_out) {
+            //自動ログインのため保存されているaccess tokenを消す。
+            SharedPreferences pref = getSharedPreferences(getString(R.string.save_data_name), Context.MODE_PRIVATE);
+            pref.edit().clear().apply();
+            //ログイン画面に遷移
+            // Intent のインスタンスを取得する。getApplicationContext()でViewの自分のアクティビティーのコンテキストを取得。遷移先のアクティビティーを.classで指定
+            Intent intent = new Intent(getApplicationContext(), com.ichimura.tamaki.gsapp.UserActivity.class);
+            // 遷移先の画面を呼び出す
+            startActivity(intent);
+            //戻れないようにActivityを終了します。
+            finish();
+            return true;
+        }
+        //Userで追加ここまで
+
+        return true;
+    }
 
    // @Override
     //public boolean onOptionsItemSelected(MenuItem item) {

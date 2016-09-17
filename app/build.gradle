@@ -18,6 +18,21 @@ android {
         }
     }
 }
+//追加
+allprojects {
+    repositories {
+        jcenter()
+        maven {
+            url  "http://dl.bintray.com/kii/KiiAndroidSDK"
+        }
+    }
+}
+//追加
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -27,4 +42,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.1'
     testCompile 'junit:junit:4.12'
     compile project(':modules:volley')
+//追加 ダウンロードしたやつの読み込み 下２つはライブラリ ※ドットは@で大丈夫
+    compile 'com.example.library:android-cloud-sdk-v2.4.11@aar'
+    compile 'com.squareup.okhttp:okhttp:2.7.2'
+    compile 'com.squareup.okhttp:okhttp-apache:2.7.2'
 }
